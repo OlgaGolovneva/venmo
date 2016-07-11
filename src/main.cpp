@@ -1,4 +1,4 @@
-﻿#include <iostream>
+#include <iostream>
 //file operations
 #include <fstream> 
 //strings
@@ -7,12 +7,13 @@
 //precision
 #include <iomanip>
 #include <math.h>
-//name-degree
+//heaps and hashtables
 #include <unordered_map>
 #include <queue>
 using namespace std;
 #include<vector>
 
+//this class dynamically updates/computes median
 class Medianer
 {
 	vector<int> count;
@@ -106,30 +107,26 @@ class Medianer
 
 long long parsetime(string &s)
 {
-    stringstream ss(s);
-    tm timeout;
-    string tmp;
-    char c;
-	
+	stringstream ss(s);
+	tm timeout;
+	string tmp;
+	char c;
 	ss >> tmp >> c >> timeout.tm_year >> c >> timeout.tm_mon >>c>> timeout.tm_mday >>c>> timeout.tm_hour >>c>> timeout.tm_min >>c>>timeout.tm_sec;
 	setenv("TZ", "UTC", 1);
 	time_t curtime = mktime(&timeout);
-
-
-    tm epoch_strt;
-    epoch_strt.tm_sec = 0;
-    epoch_strt.tm_min = 0;
-    epoch_strt.tm_hour = 0;
-    epoch_strt.tm_mday = 1;
-    epoch_strt.tm_mon = 0;
-    epoch_strt.tm_year = 70;
-    epoch_strt.tm_isdst = -1;
-
-    time_t basetime = mktime(&epoch_strt);
-
+	tm epoch_strt;
+	epoch_strt.tm_sec = 0;
+	epoch_strt.tm_min = 0;
+	epoch_strt.tm_hour = 0;
+	epoch_strt.tm_mday = 1;
+	epoch_strt.tm_mon = 0;
+	epoch_strt.tm_year = 70;
+	epoch_strt.tm_isdst = -1;
+	time_t basetime = mktime(&epoch_strt);
 	return difftime(curtime, basetime);
 }
 
+//input parsers
 string parse1name(string &s)
 {
 	stringstream ss(s);
@@ -177,8 +174,10 @@ string getSecondName(string pair)
 	return pair.substr(pair.find("@")+1);
 }
 
+//minHeap comparator
 typedef pair<long long, string> Key;
-struct comparator {
+struct comparator 
+{
  	bool operator()(Key i, Key j) 
  	{
  		return i.first > j.first;
@@ -207,22 +206,21 @@ int main (int argc, char *argv[])
 	ofstream output ("venmo_output/output.txt");
 
   	if (input.is_open() && output.is_open())
-  		{
-   		 while (getline (input,line))
-    	{
-    			//extract time as a number
+  	{
+   		while (getline (input,line))
+    		{
+    			//parse time as a number
     			curtime=parsetime(line);
     			realtime=max(realtime,curtime);
-    			//extract names
+    			//parse names
     			name1=parse1name(line);
     			name2=parse2name(line);
     			if (name1=="" || name2=="")
     				continue;
 
     			string names=combine(name1,name2);
-    			if (pair2time.find(names)==pair2time.end())
+    			if (pair2time.find(names)==pair2time.end()) //new pair
     			{
-    				//new pair
     				pair2time[names]=curtime;
     				//update degree of both vertices
     				medianer.incrementElement(name2deg[name1]);
@@ -231,9 +229,8 @@ int main (int argc, char *argv[])
     				name2deg[name2]++;
     				time2pair.push(make_pair(curtime, names));
     			}
-    			else
+    			else //update time for an existing pair
     			{
-    				//update time for an existing pair
     				if (curtime>pair2time[names])
     				{
     					pair2time[names]= curtime;
@@ -241,7 +238,7 @@ int main (int argc, char *argv[])
 					}
 				}
 
-					
+			//remove old pairs		
     			while (!time2pair.empty() && time2pair.top().first<=realtime-60) 
     			{
     				if (pair2time[time2pair.top().second]==time2pair.top().first)
@@ -254,17 +251,16 @@ int main (int argc, char *argv[])
     					name2deg[name2]--;
     					pair2time.erase(time2pair.top().second);
     				}
- 					time2pair.pop();
- 				}
+ 				time2pair.pop();
+ 			}
 
- 				output<< fixed << setprecision(2)<<floor(100 * medianer.getMedian()) / 100<< "\n";
- 				//cout<< fixed << setprecision(2)<<floor(100 * medianer.getMedian()) / 100<< "\n";
-    	}
-    	input.close();
+ 			output<< fixed << setprecision(2)<<floor(100 * medianer.getMedian()) / 100<< "\n";
+ 			//cout<< fixed << setprecision(2)<<floor(100 * medianer.getMedian()) / 100<< "\n";
+    		}
+    		input.close();
   		output.close();
   	}
-
- 	else cout << "Unable to open venmo-trans.txt file"; 
+	else cout << "Unable to open venmo-trans.txt file"; 
 
 	return 0;
 }
