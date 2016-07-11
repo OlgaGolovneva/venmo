@@ -1,0 +1,5 @@
+[Sun Jul 10 14:05:53 MSK 2016] 0 of 1 tests passed
+[Sun Jul 10 14:15:20 MSK 2016] 0 of 1 tests passed
+[Sun Jul 10 14:16:47 MSK 2016] 0 of 1 tests passed
+[Sun Jul 10 14:17:02 MSK 2016] 0 of 1 tests passed
+[Sun Jul 10 14:18:47 MSK 2016] 0 of 1 tests passed
