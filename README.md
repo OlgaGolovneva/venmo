@@ -1,10 +1,1 @@
-This code was written in C++ using standard libraries:
-#include iostream
-#include fstream
-#include sstream 
-#include ctime
-#include iomanip
-#include math.h
-#include unordered_map
-#include queue
-#include vector
+This code was written in C++ and works with JSON files. Main assumptions: records are out of order; only 60 sec window is considered
